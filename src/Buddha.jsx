@@ -1,7 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useContext } from "react";
 import { useGLTF, useAnimations, useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+
+import { GamepadsContext } from 'react-gamepads';
 
 const MODEL = "/models/buddha.glb";
 
@@ -19,6 +21,8 @@ export default function Buddha(props) {
   const { actions, names } = useAnimations(animations, buddha);
   const [subscribedKeys, getKeys] = useKeyboardControls();
   const [isWalking, setIsWalking] = useState(false);
+
+  const { gamepads } = useContext(GamepadsContext);
 
   const [smoothedCharacterDirection] = useState(
     () => new THREE.Vector3(0, 0, 0)
@@ -39,10 +43,12 @@ export default function Buddha(props) {
 
     const direction = { x: 0, y: 0, z: 0 };
 
-    if (up) direction.z -= 1;
-    if (down) direction.z += 1;
-    if (left) direction.x -= 1;
-    if (right) direction.x += 1;
+    const [gpX, gpZ] = gamepads[0]?.axes || [0, 0];
+
+    if (up || gpZ < -0.5) direction.z -= 1;
+    if (down || gpZ > 0.5) direction.z += 1;
+    if (left || gpX < -0.5) direction.x -= 1;
+    if (right || gpX > 0.5) direction.x += 1;
 
     const walks = Math.abs(direction.x) + Math.abs(direction.z);
     if(walks && !isWalking) setIsWalking(true)
