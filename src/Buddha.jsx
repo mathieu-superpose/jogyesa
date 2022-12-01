@@ -1,9 +1,11 @@
-import React, { useEffect, useRef } from "react";
-import { useGLTF, useAnimations } from "@react-three/drei";
+import React, { useEffect, useRef, useState } from "react";
+import { useGLTF, useAnimations, useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 const MODEL = "/models/buddha.glb";
+
+const SPEED = 5;
 
 const goldMaterial = new THREE.MeshStandardMaterial({
   color: new THREE.Color(0xe2ab27),
@@ -12,18 +14,55 @@ const goldMaterial = new THREE.MeshStandardMaterial({
 });
 
 export default function Buddha(props) {
-  const group = useRef();
+  const buddha = useRef();
   const { nodes, materials, animations } = useGLTF(MODEL);
-  const { actions, names } = useAnimations(animations, group);
+  const { actions, names } = useAnimations(animations, buddha);
+  const [subscribedKeys, getKeys] = useKeyboardControls();
+  const [isWalking, setIsWalking] = useState(false);
+
+  const [smoothedCharacterDirection] = useState(
+    () => new THREE.Vector3(0, 0, 0)
+  );
+  const [smoothedCameraPosition] = useState(
+    () => new THREE.Vector3(20, 20, 20)
+  );
+  const [smoothedCameraTarget] = useState(() => new THREE.Vector3());
 
   useEffect(() => {
-    actions[names[0]].reset().fadeIn().play();
-  }, []);
+    const animation = isWalking ? names[4] : names[0];
+    actions[animation].reset().fadeIn(0.5).play();
+    return () => actions[animation].fadeOut(0.5)
+  }, [isWalking]);
 
-  useFrame((state, delta) => {});
+  useFrame((state, delta) => {
+    const { up, down, left, right } = getKeys();
+
+    const direction = { x: 0, y: 0, z: 0 };
+
+    if (up) direction.z -= 1;
+    if (down) direction.z += 1;
+    if (left) direction.x -= 1;
+    if (right) direction.x += 1;
+
+    const walks = Math.abs(direction.x) + Math.abs(direction.z);
+    if(walks && !isWalking) setIsWalking(true)
+    if(!walks && isWalking) setIsWalking(false)
+
+    buddha.current.position.x += direction.x * delta * SPEED;
+    buddha.current.position.z += direction.z * delta * SPEED;
+
+    const characterDirection = new THREE.Vector3();
+    characterDirection.copy(buddha.current.position);
+    characterDirection.x += direction.x
+    characterDirection.z += direction.z
+
+    smoothedCharacterDirection.lerp(characterDirection, 5 * delta)
+
+    buddha.current.lookAt(smoothedCharacterDirection);
+  });
 
   return (
-    <group ref={group} {...props} dispose={null}>
+    <group ref={buddha} dispose={null}>
       <group name="Scene">
         <group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
           <primitive object={nodes.mixamorigHips} />
