@@ -1,27 +1,39 @@
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { KeyboardControls, OrbitControls } from "@react-three/drei";
 
 import Buddha from "./Buddha";
-import Floor from './Floor';
+import Temple from "./assets/Temple";
+import Floor from "./Floor";
+import Lights from "./Lights";
+
 
 import "./App.css";
 
 function App() {
   return (
     <div className="App">
-      <Canvas
-        shadows
+      <KeyboardControls
+        map={[
+          { name: "up", keys: ["ArrowUp"] },
+          { name: "down", keys: ["ArrowDown"] },
+          { name: "left", keys: ["ArrowLeft"] },
+          { name: "right", keys: ["ArrowRight"] },
+        ]}
       >
-        <OrbitControls />
-        <ambientLight />
-        <directionalLight 
-          castShadow
-          position={[-2, 2, 2]}
-          intensity={10}
-        />
-        <Buddha />
-        <Floor />
-      </Canvas>
+        <Canvas
+          shadows
+          camera={{
+            fov: 75,
+            position: [0, 10, 15],
+          }}
+        >
+          <OrbitControls />
+          <Lights />
+          <Buddha />
+          <Temple position={[0, 0, -13]} />
+          <Floor />
+        </Canvas>
+      </KeyboardControls>
     </div>
   );
 }
