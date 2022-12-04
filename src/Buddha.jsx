@@ -7,7 +7,7 @@ import { GamepadsContext } from 'react-gamepads';
 
 const MODEL = "/models/buddha.glb";
 
-const SPEED = 5;
+const SPEED = 2;
 
 const goldMaterial = new THREE.MeshStandardMaterial({
   color: new THREE.Color(0xe2ab27),
@@ -15,7 +15,7 @@ const goldMaterial = new THREE.MeshStandardMaterial({
   roughness: 0.1,
 });
 
-export default function Buddha(props) {
+export default function Buddha() {
   const buddha = useRef();
   const { nodes, materials, animations } = useGLTF(MODEL);
   const { actions, names } = useAnimations(animations, buddha);
@@ -68,7 +68,7 @@ export default function Buddha(props) {
   });
 
   return (
-    <group ref={buddha} dispose={null}>
+    <group scale={0.5} ref={buddha} dispose={null}>
       <group name="Scene">
         <group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
           <primitive object={nodes.mixamorigHips} />
