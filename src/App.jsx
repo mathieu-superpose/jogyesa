@@ -4,6 +4,8 @@ import { KeyboardControls, OrbitControls } from "@react-three/drei";
 import Buddha from "./Buddha";
 import Temple from "./assets/Temple";
 import Floor from "./Floor";
+import Lights from "./Lights";
+
 
 import "./App.css";
 
@@ -19,15 +21,14 @@ function App() {
         ]}
       >
         <Canvas
-          // shadows
+          shadows
+          camera={{
+            fov: 75,
+            position: [0, 10, 15],
+          }}
         >
           <OrbitControls />
-          <ambientLight />
-          <directionalLight 
-            castShadow 
-            position={[-2, 2, 2]} 
-            intensity={7}
-          />
+          <Lights />
           <Buddha />
           <Temple position={[0, 0, -13]} />
           <Floor />
