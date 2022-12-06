@@ -26,6 +26,7 @@ function App() {
             fov: 75,
             position: [0, 10, 15],
           }}
+          legacy={true}
         >
           <OrbitControls />
           <Lights />
