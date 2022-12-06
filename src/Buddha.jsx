@@ -15,8 +15,6 @@ const goldMaterial = new THREE.MeshStandardMaterial({
   roughness: 0.1,
 });
 
-THREE.ColorManagement.legacyMode = true
-
 export default function Buddha() {
   const buddha = useRef();
   const { nodes, materials, animations } = useGLTF(MODEL);
@@ -39,6 +37,10 @@ export default function Buddha() {
     actions[animation].reset().fadeIn(0.5).play();
     return () => actions[animation].fadeOut(0.5);
   }, [isWalking]);
+
+  useEffect(() => {
+    console.log(names)
+  }, []);
 
   useFrame((state, delta) => {
     const { up, down, left, right } = getKeys();
@@ -71,66 +73,38 @@ export default function Buddha() {
 
   return (
     <group scale={0.5} ref={buddha} dispose={null}>
-      <group name="Armature" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
+      <group name="Buddha" rotation={[Math.PI / 2, 0, 0]} scale={0.01}>
         <primitive object={nodes.mixamorigHips} />
-        <skinnedMesh
-          castShadow
-          name="Hat"
-          geometry={nodes.Hat.geometry}
-          material={materials["hat.001"]}
-          skeleton={nodes.Hat.skeleton}
-        />
-        <skinnedMesh
-          castShadow
-          name="Body"
-          geometry={nodes.Body.geometry}
-          material={goldMaterial}
-          skeleton={nodes.Body.skeleton}
-        />
 
         <skinnedMesh
-          castShadow
-          name="Vest"
-          geometry={nodes.Vest.geometry}
-          material={materials["clothes.001"]}
-          skeleton={nodes.Vest.skeleton}
+          name="body001"
+          geometry={nodes.body001.geometry}
+          material={materials["gold.001"]}
+          skeleton={nodes.body001.skeleton}
         />
-        <group name="Head">
-          <skinnedMesh
-            castShadow
-            name="head001"
-            geometry={nodes.head001.geometry}
-            material={goldMaterial}
-            skeleton={nodes.head001.skeleton}
-          />
-          <skinnedMesh
-            castShadow
-            name="head001_1"
-            geometry={nodes.head001_1.geometry}
-            material={materials["mouth.001"]}
-            skeleton={nodes.head001_1.skeleton}
-          />
-          <skinnedMesh
-            castShadow
-            name="head001_2"
-            geometry={nodes.head001_2.geometry}
-            material={materials["tongue.001"]}
-            skeleton={nodes.head001_2.skeleton}
-          />
-          <skinnedMesh
-            castShadow
-            name="head001_3"
-            geometry={nodes.head001_3.geometry}
-            material={materials["black.001"]}
-            skeleton={nodes.head001_3.skeleton}
-          />
-        </group>
         <skinnedMesh
-          castShadow
-          name="Skirt"
-          geometry={nodes.Skirt.geometry}
+          name="body001_1"
+          geometry={nodes.body001_1.geometry}
+          material={materials["black.001"]}
+          skeleton={nodes.body001_1.skeleton}
+        />
+        <skinnedMesh
+          name="body001_2"
+          geometry={nodes.body001_2.geometry}
           material={materials["clothes.001"]}
-          skeleton={nodes.Skirt.skeleton}
+          skeleton={nodes.body001_2.skeleton}
+        />
+        <skinnedMesh
+          name="body001_3"
+          geometry={nodes.body001_3.geometry}
+          material={materials["mouth.001"]}
+          skeleton={nodes.body001_3.skeleton}
+        />
+        <skinnedMesh
+          name="body001_4"
+          geometry={nodes.body001_4.geometry}
+          material={materials["tongue.001"]}
+          skeleton={nodes.body001_4.skeleton}
         />
       </group>
     </group>
