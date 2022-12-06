@@ -8,6 +8,8 @@ import { GamepadsContext } from "react-gamepads";
 const MODEL = "/models/buddha.glb";
 
 const SPEED = 2;
+const WALKING_SPEED = 2;
+const RUNNING_SPEED = 4;
 
 const goldMaterial = new THREE.MeshStandardMaterial({
   color: new THREE.Color(0xe2ab27),
@@ -21,6 +23,7 @@ export default function Buddha() {
   const { actions, names } = useAnimations(animations, buddha);
   const [subscribedKeys, getKeys] = useKeyboardControls();
   const [isWalking, setIsWalking] = useState(false);
+  const [isMoving, setIsMoving] = useState(false);
 
   const { gamepads } = useContext(GamepadsContext);
 
@@ -32,15 +35,26 @@ export default function Buddha() {
   );
   const [smoothedCameraTarget] = useState(() => new THREE.Vector3());
 
-  useEffect(() => {
-    const animation = isWalking ? names[4] : names[0];
-    actions[animation].reset().fadeIn(0.5).play();
-    return () => actions[animation].fadeOut(0.5);
-  }, [isWalking]);
+  const getCurrentMove = () => {
+    /*
+    0: "Idle"
+    1: "Jump"
+    2: "Roll"
+    3: "Run"
+    4: "Walk"
+    */
+
+    if (!isMoving) return names[0];
+    if (isWalking) return names[4];
+    return names[3];
+  };
 
   useEffect(() => {
-    console.log(names)
-  }, []);
+    const animation = getCurrentMove();
+
+    actions[animation].reset().fadeIn(0.5).play();
+    return () => actions[animation].fadeOut(0.5);
+  }, [isMoving, isWalking]);
 
   useFrame((state, delta) => {
     const { up, down, left, right } = getKeys();
@@ -55,11 +69,13 @@ export default function Buddha() {
     if (right || gpX > 0.5) direction.x += 1;
 
     const walks = Math.abs(direction.x) + Math.abs(direction.z);
-    if (walks && !isWalking) setIsWalking(true);
-    if (!walks && isWalking) setIsWalking(false);
+    if (walks && !isMoving) setIsMoving(true);
+    if (!walks && isMoving) setIsMoving(false);
 
-    buddha.current.position.x += direction.x * delta * SPEED;
-    buddha.current.position.z += direction.z * delta * SPEED;
+    const speed = isWalking ? WALKING_SPEED : RUNNING_SPEED
+
+    buddha.current.position.x += direction.x * delta * speed;
+    buddha.current.position.z += direction.z * delta * speed;
 
     const characterDirection = new THREE.Vector3();
     characterDirection.copy(buddha.current.position);
