@@ -79,7 +79,7 @@ export default function Buddha() {
         <skinnedMesh
           name="body001"
           geometry={nodes.body001.geometry}
-          material={materials["gold.001"]}
+          material={goldMaterial}
           skeleton={nodes.body001.skeleton}
         />
         <skinnedMesh
