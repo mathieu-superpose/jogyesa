@@ -3,7 +3,7 @@ import { useGLTF, useAnimations, useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-import { GamepadsContext } from "react-gamepads";
+// import { GamepadsContext } from "react-gamepads";
 
 const MODEL = "/models/buddha.glb";
 
@@ -25,7 +25,7 @@ export default function Buddha() {
   const [isWalking, setIsWalking] = useState(false);
   const [isMoving, setIsMoving] = useState(false);
 
-  const { gamepads } = useContext(GamepadsContext);
+  // const { gamepads } = useContext(GamepadsContext);
 
   const [smoothedCharacterDirection] = useState(
     () => new THREE.Vector3(0, 0, 0)
@@ -61,18 +61,16 @@ export default function Buddha() {
 
     const direction = { x: 0, y: 0, z: 0 };
 
-    const [gpX, gpZ] = gamepads[0]?.axes || [0, 0];
-
-    if (up || gpZ < -0.5) direction.z -= 1;
-    if (down || gpZ > 0.5) direction.z += 1;
-    if (left || gpX < -0.5) direction.x -= 1;
-    if (right || gpX > 0.5) direction.x += 1;
+    if (up) direction.z -= 1;
+    if (down) direction.z += 1;
+    if (left) direction.x -= 1;
+    if (right) direction.x += 1;
 
     const walks = Math.abs(direction.x) + Math.abs(direction.z);
     if (walks && !isMoving) setIsMoving(true);
     if (!walks && isMoving) setIsMoving(false);
 
-    const speed = isWalking ? WALKING_SPEED : RUNNING_SPEED
+    const speed = isWalking ? WALKING_SPEED : RUNNING_SPEED;
 
     buddha.current.position.x += direction.x * delta * speed;
     buddha.current.position.z += direction.z * delta * speed;
